@@ -29,7 +29,7 @@ const Pagination:React.FC<PropsType> = ({ pageCount, handlePageClick, pageRange 
         breakClassName="page-item px-1"
         breakLinkClassName="page-link"
         containerClassName="flex items-center justify-center gap-1 mt-6"
-        activeClassName="!bg-green-500 text-white border border-gray-300 hover:bg-primary_color pointer-events-none"
+        activeClassName="!bg-blue-500 text-white border border-gray-300 hover:bg-primary_color pointer-events-none"
         renderOnZeroPageCount={null}
       />
     </div>

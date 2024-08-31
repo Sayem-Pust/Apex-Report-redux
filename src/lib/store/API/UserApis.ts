@@ -2,6 +2,7 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import auth from "@/utils/auth";
 import clientAxios from "@/services/config";
 import { USER_API } from "@/services/api-end-point/users";
+import axios from "axios";
 
 export const getUser = createAsyncThunk(
   "user/get",
@@ -36,9 +37,27 @@ export const login = createAsyncThunk(
 
       thunkAPI.dispatch(getUser({}));
       return response.data;
-    } catch (error) {
-      console.log(error);
-      throw error;
+    } catch (error: any) {
+      // Handle All types of error`
+      console.error("Login error:", error);
+      if (axios.isAxiosError(error)) {
+        const statusCode = error.response?.status;
+        const message =
+          error.response?.data?.message || "An error occurred during login.";
+
+        if (statusCode === 401) {
+          return thunkAPI.rejectWithValue("Invalid email or password.");
+        } else if (statusCode === 500) {
+          return thunkAPI.rejectWithValue(
+            "Internal server error. Please try again later."
+          );
+        }
+        return thunkAPI.rejectWithValue(message);
+      }
+
+      return thunkAPI.rejectWithValue(
+        "An unexpected error occurred. Please try again."
+      );
     }
   }
 );

@@ -7,7 +7,7 @@ import { getPurchaseMaterials } from "@/lib/store/API/meterialsApi";
 import React, { useEffect } from "react";
 
 const Dashboard = () => {
-  const { materialList, loading } = useAppSelector((state) => state.material);
+  const { materialList, loading, error } = useAppSelector((state) => state.material);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -28,8 +28,7 @@ const Dashboard = () => {
         <LoadingSpinner />
       ) : (
         <div className="m-3">
-          <PurchaseModal
-          />
+          <PurchaseModal />
 
           <div className="overflow-x-scroll">
             <table className="table-auto  w-full border-separate border-spacing-1 border  custom-table-data my-2">
@@ -112,6 +111,11 @@ const Dashboard = () => {
               pageRange={2}
             />
           </div>
+          {error && (
+            <div className="mt-4 p-3 bg-red-100 text-red-700 rounded">
+              <p>{error}</p>
+            </div>
+          )}
         </div>
       )}
     </aside>

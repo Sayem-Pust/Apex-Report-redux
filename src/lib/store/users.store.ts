@@ -5,28 +5,33 @@ import auth from "@/utils/auth";
 const initialState: {
   loading: boolean;
   user: any;
+  error: any;
 } = {
   loading: false,
   user: auth.getUserInfo() || {},
+  error: null,
 };
 
 const authSlice = createSlice({
   name: "auth",
   initialState: initialState,
   extraReducers: (builder) => {
-    // Add reducers for additional action types here, and handle loading state as needed
+    builder.addCase(login.pending, (state, action) => {
+      state.error = null;
+      state.loading = true;
+    });
+    builder.addCase(login.fulfilled, (state, action) => {
+      state.user = action.payload.user_data;
+      state.error = null;
+    });
+    builder.addCase(login.rejected, (state, action) => {
+      state.error = action.payload as string;
+    });
     builder.addCase(getUser.fulfilled, (state, action) => {
       state.loading = false;
       state.user = action.payload;
+      state.error = null;
     });
-    // builder.addCase(getAmbassadorList.fulfilled, (state, action) => {
-    //   state.loading = false;
-    //   state.ambassadorList = action.payload;
-    // });
-    // builder.addCase(getUserProfile.fulfilled, (state, action) => {
-    //   state.loading = false;
-    //   state.userDetails = action.payload;
-    // });
   },
   reducers: {
     logout: (state) => {

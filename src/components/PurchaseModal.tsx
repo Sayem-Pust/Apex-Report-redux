@@ -1,12 +1,16 @@
 "use client";
+
 import React, { useState } from "react";
 import ModalContainer from "./ModalContainer";
 import DatePicker from "react-datepicker";
 import { ToastContainer, toast } from "react-toastify";
-import "react-datepicker/dist/react-datepicker.css";
-import "react-toastify/dist/ReactToastify.css";
 import { useAppDispatch } from "@/lib/hooks";
 import { postPurchaseMaterials } from "@/lib/store/API/meterialsApi";
+
+
+import "react-datepicker/dist/react-datepicker.css";
+import "react-toastify/dist/ReactToastify.css";
+
 
 interface Row {
   id: number;
@@ -30,7 +34,7 @@ interface RowErrors {
 const PurchaseModal: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [errors, setErrors] = useState<{ [key: number]: RowErrors }>({});
-  const [rows, setRows] = useState<Row[]>([
+  const [formData, setFormData] = useState<Row[]>([
     {
       id: Date.now(),
       line_item_name: "",
@@ -44,28 +48,28 @@ const PurchaseModal: React.FC = () => {
 
   const dispatch = useAppDispatch();
 
-
-  const validateRow = (row: Row) => {
+  const validateData = (data: Row) => {
     const newErrors: RowErrors = {};
 
-    if (!row.line_item_name)
+    if (!data.line_item_name)
       newErrors.line_item_name = "Item name is required.";
-    if (!row.store) newErrors.store = "Store is required.";
-    if (!row.runners_name)
+    if (!data.store) newErrors.store = "Store is required.";
+    if (!data.runners_name)
       newErrors.runners_name = "Runner's name is required.";
-    if (row.amount <= 0) newErrors.amount = "Amount must be greater than 0.";
-    if (row.card_number.toString().length !== 5)
+    if (data.amount <= 0) newErrors.amount = "Amount must be greater than 0.";
+    if (data.card_number.toString().length !== 5)
       newErrors.card_number = "Card number must be 5 digits.";
-    if (!row.transaction_date) newErrors.transaction_date = "Date is required.";
+    if (!data.transaction_date)
+      newErrors.transaction_date = "Date is required.";
 
     return newErrors;
   };
 
   const handleInputChange = (id: number, field: keyof Row, value: string) => {
-    const updatedRows = rows.map((row) =>
-      row.id === id ? { ...row, [field]: value } : row
+    const updatedData = formData.map((data) =>
+      data.id === id ? { ...data, [field]: value } : data
     );
-    setRows(updatedRows);
+    setFormData(updatedData);
   };
 
   const addRow = () => {
@@ -78,7 +82,7 @@ const PurchaseModal: React.FC = () => {
       card_number: 0,
       transaction_date: null,
     };
-    setRows([...rows, newRow]);
+    setFormData([...formData, newRow]);
   };
 
   const handleChange =
@@ -103,7 +107,7 @@ const PurchaseModal: React.FC = () => {
     };
 
   const deleteRow = (id: number) => {
-    setRows(rows.filter((row) => row.id !== id));
+    setFormData(formData.filter((row) => row.id !== id));
   };
 
   const closeModel = () => {
@@ -113,8 +117,8 @@ const PurchaseModal: React.FC = () => {
   const handleSave = async () => {
     let valid = true;
     const newErrors: { [key: number]: RowErrors } = {};
-    rows.forEach((row) => {
-      const rowErrors = validateRow(row);
+    formData.forEach((row) => {
+      const rowErrors = validateData(row);
       if (Object.keys(rowErrors).length > 0) {
         newErrors[row.id] = rowErrors;
         valid = false;
@@ -126,8 +130,8 @@ const PurchaseModal: React.FC = () => {
     if (valid) {
       ("use server");
       try {
-        dispatch(postPurchaseMaterials({ material_purchase: rows }));
-        setRows([
+        dispatch(postPurchaseMaterials({ material_purchase: formData }));
+        setFormData([
           {
             id: Date.now(),
             line_item_name: "",
@@ -223,7 +227,7 @@ const PurchaseModal: React.FC = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {rows.map((row, index) => (
+                          {formData.map((row, index) => (
                             <tr
                               key={row.id}
                               className={

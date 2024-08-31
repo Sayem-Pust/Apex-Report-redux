@@ -2,11 +2,12 @@ import { MATERIALS_API } from "@/services/api-end-point/materials";
 import clientAxios from "@/services/config";
 import auth from "@/utils/auth";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
 import { redirect } from "next/navigation";
 
 export const getPurchaseMaterials = createAsyncThunk(
   "materials/get",
-  async (paramsData: any, { rejectWithValue }) => {
+  async (paramsData: any, thunkAPI) => {
     let token = auth.getToken();
     if (!token) {
       redirect("/login");
@@ -20,10 +21,27 @@ export const getPurchaseMaterials = createAsyncThunk(
         }
       );
       return data;
-    } catch (err: any) {
-      console.log(err);
+    } catch (error: any) {
+      // Handle All types of error`
+      console.error("Login error:", error);
+      if (axios.isAxiosError(error)) {
+        const statusCode = error.response?.status;
+        const message =
+          error.response?.data?.message || "An error occurred during login.";
 
-      return rejectWithValue(err.message);
+        if (statusCode === 401) {
+          return thunkAPI.rejectWithValue("User not authenticated");
+        } else if (statusCode === 500) {
+          return thunkAPI.rejectWithValue(
+            "Internal server error. Please try again later."
+          );
+        }
+        return thunkAPI.rejectWithValue(message);
+      }
+
+      return thunkAPI.rejectWithValue(
+        "An unexpected error occurred. Please try again."
+      );
     }
   }
 );
@@ -47,10 +65,28 @@ export const postPurchaseMaterials = createAsyncThunk(
 
       thunkAPI.dispatch(getPurchaseMaterials({ page: 1 }));
 
-      return response.data; // Return the data from the response
-    } catch (error) {
-      console.log(error);
-      throw error; // Rethrow the error so it can be handled by the rejected action
+      return response.data;
+    } catch (error: any) {
+      // Handle All types of error`
+      console.error("Login error:", error);
+      if (axios.isAxiosError(error)) {
+        const statusCode = error.response?.status;
+        const message =
+          error.response?.data?.message || "An error occurred during login.";
+
+        if (statusCode === 401) {
+          return thunkAPI.rejectWithValue("User not authenticated");
+        } else if (statusCode === 500) {
+          return thunkAPI.rejectWithValue(
+            "Internal server error. Please try again later."
+          );
+        }
+        return thunkAPI.rejectWithValue(message);
+      }
+
+      return thunkAPI.rejectWithValue(
+        "An unexpected error occurred. Please try again."
+      );
     }
   }
 );

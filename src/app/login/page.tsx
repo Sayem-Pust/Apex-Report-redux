@@ -13,29 +13,52 @@ const PoppinsFont = Poppins({
 });
 
 export default function Login() {
-  const { user } = useAppSelector((state) => state.users);
+  const { user, error } = useAppSelector((state) => state.users);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+    {}
+  );
 
   const router = useRouter();
   const dispatch = useAppDispatch();
 
+  const validate = () => {
+    const newErrors: { email?: string; password?: string } = {};
+
+    if (!email) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "Invalid email format";
+    }
+
+    if (!password) {
+      newErrors.password = "Password is required";
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    dispatch(
-      login({
-        email,
-        password,
-      })
-    );
+    if (validate()) {
+      dispatch(
+        login({
+          email,
+          password,
+        })
+      );
+    }
   };
 
   useEffect(() => {
     if (user?.id) {
       router.push("/");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, router]);
 
   return (
     <section className="overflow-hidden md:h-screen">
@@ -59,10 +82,9 @@ export default function Login() {
                 </div>
               </div>
               <form className="space-y-4" onSubmit={handleSubmit}>
-                {/* <form className="space-y-4" action={action}> */}
                 <div className={`${PoppinsFont.className}`}>
                   <label
-                    htmlFor="identifier"
+                    htmlFor="email"
                     id="email-label"
                     className=" !text-black "
                   >
@@ -76,32 +98,37 @@ export default function Login() {
                     <input
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      name="email"
                       aria-label="Your email address"
                       placeholder="boss@gmail.com"
                       id="email"
                       type="text"
-                      aria-invalid="false"
-                      className="w-full lg:w-[60%] p-2 border rounded border-[#CBD5E1] outline-none"
+                      aria-invalid={errors.email ? "true" : "false"}
+                      className={`w-full lg:w-[60%] p-2 border rounded outline-none ${
+                        errors.email
+                          ? "border-red-500 focus:border-red-500"
+                          : "border-[#CBD5E1]"
+                      }`}
                     />
-                  </div>
-                  {/* {formState.errors.email && (
-                    <div className="flex items-center gap-2">
-                      <span>
+                    {errors.email && (
+                      <div className="flex items-center mt-2 gap-2 text-red-500 text-sm">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
                           viewBox="0 0 24 24"
-                          width="15px"
-                          height="15px"
+                          stroke="currentColor"
+                          className="w-5 h-5"
                         >
-                          <path d="M 4.9902344 3.9902344 A 1.0001 1.0001 0 0 0 4.2929688 5.7070312 L 10.585938 12 L 4.2929688 18.292969 A 1.0001 1.0001 0 1 0 5.7070312 19.707031 L 12 13.414062 L 18.292969 19.707031 A 1.0001 1.0001 0 1 0 19.707031 18.292969 L 13.414062 12 L 19.707031 5.7070312 A 1.0001 1.0001 0 0 0 18.980469 3.9902344 A 1.0001 1.0001 0 0 0 18.292969 4.2929688 L 12 10.585938 L 5.7070312 4.2929688 A 1.0001 1.0001 0 0 0 4.9902344 3.9902344 z" />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
                         </svg>
-                      </span>
-                      <span className="text-sm font-roboto font-light  text-opacity-80 text-red-500">
-                        {formState.errors.email?.join(", ")}
-                      </span>
-                    </div>
-                  )} */}
+                        <span>{errors.email}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className={`${PoppinsFont.className}`}>
                   <label
@@ -116,35 +143,40 @@ export default function Login() {
                     </span>
                   </label>
                   <div className="mantine-PasswordInput-wrapper relative">
-                    <div aria-invalid="false">
-                      <input
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        name="password"
-                        className="w-full lg:w-[60%] p-2 border rounded border-[#CBD5E1] outline-none"
-                        id="password"
-                        placeholder="anyPassword1971"
-                        aria-label="Your password"
-                      />
-                    </div>
-                  </div>
-                  {/* {formState.errors.password && (
-                    <div className="flex items-center gap-2">
-                      <span>
+                    <input
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className={`w-full lg:w-[60%] p-2 border rounded outline-none ${
+                        errors.password
+                          ? "border-red-500 focus:border-red-500"
+                          : "border-[#CBD5E1]"
+                      }`}
+                      id="password"
+                      placeholder="anyPassword1971"
+                      aria-label="Your password"
+                      type="password"
+                      aria-invalid={errors.password ? "true" : "false"}
+                    />
+                    {errors.password && (
+                      <div className="flex items-center mt-2 gap-2 text-red-500 text-sm">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
                           viewBox="0 0 24 24"
-                          width="15px"
-                          height="15px"
+                          stroke="currentColor"
+                          className="w-5 h-5"
                         >
-                          <path d="M 4.9902344 3.9902344 A 1.0001 1.0001 0 0 0 4.2929688 5.7070312 L 10.585938 12 L 4.2929688 18.292969 A 1.0001 1.0001 0 1 0 5.7070312 19.707031 L 12 13.414062 L 18.292969 19.707031 A 1.0001 1.0001 0 1 0 19.707031 18.292969 L 13.414062 12 L 19.707031 5.7070312 A 1.0001 1.0001 0 0 0 18.980469 3.9902344 A 1.0001 1.0001 0 0 0 18.292969 4.2929688 L 12 10.585938 L 5.7070312 4.2929688 A 1.0001 1.0001 0 0 0 4.9902344 3.9902344 z" />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
                         </svg>
-                      </span>
-                      <span className="text-sm font-roboto font-light  text-opacity-80 text-red-500">
-                        {formState.errors.password?.join(", ")}
-                      </span>
-                    </div>
-                  )} */}
+                        <span>{errors.password}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <button
                   className={`mt-0 lg:!mt-10 bg-blue-500 text-white py-2 px-6 rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75 disabled:bg-gray-400`}
@@ -152,11 +184,11 @@ export default function Login() {
                   Sign In
                 </button>
               </form>
-              {/* {formState?.errors?._form ? (
-                <div className="rounded p-2 bg-red-200 border border-red-400">
-                  {formState.errors._form?.join(", ")}
+              {error && (
+                <div className="mt-4 p-3 bg-red-100 text-red-700 rounded">
+                  <p>{error}</p>
                 </div>
-              ) : null} */}
+              )}
             </div>
           </div>
         </div>
