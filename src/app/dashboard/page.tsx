@@ -1,19 +1,24 @@
 "use client";
+import { useEffect } from "react";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import Pagination from "@/components/Pagination";
 import PurchaseModal from "@/components/PurchaseModal";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { getPurchaseMaterials } from "@/lib/store/API/meterialsApi";
-import React, { useEffect } from "react";
 
 const Dashboard = () => {
-  const { materialList, loading, error } = useAppSelector((state) => state.material);
+  // Extracting material data, loading state, and error state from the Redux store
+  const { materialList, loading, error } = useAppSelector(
+    (state) => state.material
+  );
   const dispatch = useAppDispatch();
 
+  // Fetch materials data on component mount
   useEffect(() => {
     dispatch(getPurchaseMaterials({ page: 1 }));
   }, [dispatch]);
 
+  // Handle page click for pagination
   const handlePageClick = (data: any) => {
     dispatch(getPurchaseMaterials({ page: data.selected + 1 }));
     window.scrollTo({
@@ -30,6 +35,7 @@ const Dashboard = () => {
         <div className="m-3">
           <PurchaseModal />
 
+          {/* Table Section */}
           <div className="overflow-x-scroll">
             <table className="table-auto  w-full border-separate border-spacing-1 border  custom-table-data my-2">
               <thead className="text-center">
@@ -101,6 +107,7 @@ const Dashboard = () => {
               </tbody>
             </table>
           </div>
+          {/* Pagination Section */}
           <div className="mt-8 flex justify-end">
             <Pagination
               pageCount={
@@ -111,6 +118,7 @@ const Dashboard = () => {
               pageRange={2}
             />
           </div>
+          {/* Display error message from API */}
           {error && (
             <div className="mt-4 p-3 bg-red-100 text-red-700 rounded">
               <p>{error}</p>

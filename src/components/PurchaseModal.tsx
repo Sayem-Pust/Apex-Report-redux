@@ -1,17 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import ModalContainer from "./ModalContainer";
 import DatePicker from "react-datepicker";
 import { ToastContainer, toast } from "react-toastify";
 import { useAppDispatch } from "@/lib/hooks";
 import { postPurchaseMaterials } from "@/lib/store/API/meterialsApi";
 
-
+// Import styles for date picker and toast notifications
 import "react-datepicker/dist/react-datepicker.css";
 import "react-toastify/dist/ReactToastify.css";
 
 
+// Define the structure of each row in the form
 interface Row {
   id: number;
   line_item_name: string;
@@ -22,6 +23,7 @@ interface Row {
   card_number: number;
 }
 
+// Define the structure for form validation errors
 interface RowErrors {
   line_item_name?: string;
   store?: string;
@@ -48,6 +50,7 @@ const PurchaseModal: React.FC = () => {
 
   const dispatch = useAppDispatch();
 
+  // Function to validate a single row of data
   const validateData = (data: Row) => {
     const newErrors: RowErrors = {};
 
@@ -65,6 +68,7 @@ const PurchaseModal: React.FC = () => {
     return newErrors;
   };
 
+  // Function to handle input changes in the form
   const handleInputChange = (id: number, field: keyof Row, value: string) => {
     const updatedData = formData.map((data) =>
       data.id === id ? { ...data, [field]: value } : data
@@ -72,6 +76,7 @@ const PurchaseModal: React.FC = () => {
     setFormData(updatedData);
   };
 
+  // Function to add a new row to the form
   const addRow = () => {
     const newRow: Row = {
       id: Date.now(),
@@ -85,12 +90,14 @@ const PurchaseModal: React.FC = () => {
     setFormData([...formData, newRow]);
   };
 
+  // Wrapper function to handle input changes for specific fields
   const handleChange =
     (id: number, field: keyof Row) =>
     (event: React.ChangeEvent<HTMLInputElement>) => {
       handleInputChange(id, field, event.target.value);
     };
 
+  // Function to handle date changes using the DatePicker component
   const handleDateChange =
     (id: number, field: keyof Row) => (date: Date | null) => {
       if (date) {
@@ -106,17 +113,22 @@ const PurchaseModal: React.FC = () => {
       }
     };
 
+  // Function to delete a specific row from the form
   const deleteRow = (id: number) => {
     setFormData(formData.filter((row) => row.id !== id));
   };
 
+  // Function to close the modal
   const closeModel = () => {
     setOpen(false);
   };
 
+  // Function to handle form submission
   const handleSave = async () => {
     let valid = true;
     const newErrors: { [key: number]: RowErrors } = {};
+
+    // Validate each row and store errors
     formData.forEach((row) => {
       const rowErrors = validateData(row);
       if (Object.keys(rowErrors).length > 0) {
@@ -128,7 +140,7 @@ const PurchaseModal: React.FC = () => {
     setErrors(newErrors);
 
     if (valid) {
-      ("use server");
+      // If all rows are valid
       try {
         dispatch(postPurchaseMaterials({ material_purchase: formData }));
         setFormData([
@@ -166,6 +178,7 @@ const PurchaseModal: React.FC = () => {
           Add Material Purchase
         </button>
       </div>
+      {/* Modal Section */}
       <ModalContainer open={open} closeModal={closeModel}>
         <div className="pr_overlay fixed left-0 top-0 h-full w-full overflow-x-hidden overflow-y-auto bg-[rgba(0,0,0,0.5)] z-20">
           <div className="modal_dialog relative w-auto transform-none 2xl:max-w-[1200px] xl:max-w-[1000px] lg:max-w-[950px] md:max-w-[700px] sm:max-w-[500px] xs:max-w-[400px] xxs:max-w-[340px] sm:min-h-[calc(100%_-_3.5rem)] min-h-[calc(100%_-_1rem)] flex items-center my-8 mx-auto">
@@ -223,7 +236,6 @@ const PurchaseModal: React.FC = () => {
                               Transaction Date
                             </th>
                             <th className="py-2 px-4 border-b"></th>{" "}
-                            {/* Column for Delete Button */}
                           </tr>
                         </thead>
                         <tbody>
@@ -245,6 +257,7 @@ const PurchaseModal: React.FC = () => {
                                     )}
                                     className="w-full min-w-[80px] px-2 py-1 font-[600] text-[12px] text-[#545454] border border-gray-300 rounded"
                                   />
+                                  {/* Display error message for Items */}
                                   {errors[row.id]?.line_item_name && (
                                     <p className="text-red-500 text-xs mt-1">
                                       {errors[row.id].line_item_name}
@@ -260,6 +273,7 @@ const PurchaseModal: React.FC = () => {
                                     onChange={handleChange(row.id, "store")}
                                     className="w-full min-w-[80px] px-2 py-1 font-[600] text-[12px] text-[#545454] border border-gray-300 rounded"
                                   />
+                                  {/* Display error message for store */}
                                   {errors[row.id]?.store && (
                                     <p className="text-red-500 text-xs mt-1">
                                       {errors[row.id].store}
@@ -278,6 +292,7 @@ const PurchaseModal: React.FC = () => {
                                     )}
                                     className="w-full min-w-[80px] px-2 py-1 font-[600] text-[12px] text-[#545454] border border-gray-300 rounded"
                                   />
+                                  {/* Display error message for runners_name */}
                                   {errors[row.id]?.runners_name && (
                                     <p className="text-red-500 text-xs mt-1">
                                       {errors[row.id].runners_name}
@@ -304,6 +319,7 @@ const PurchaseModal: React.FC = () => {
                                       className="w-full min-w-[80px] px-2 py-1 font-[600] text-[12px] text-[#545454] border border-gray-300 rounded"
                                     />
                                   </div>
+                                  {/* Display error message for amount */}
                                   {errors[row.id]?.amount && (
                                     <p className="text-red-500 text-xs mt-1">
                                       {errors[row.id].amount}
@@ -325,6 +341,7 @@ const PurchaseModal: React.FC = () => {
                                     }}
                                     className="w-full min-w-[80px] px-2 py-1 font-[600] text-[12px] text-[#545454] border border-gray-300 rounded"
                                   />
+                                  {/* Display error message for card number */}
                                   {errors[row.id]?.card_number && (
                                     <p className="text-red-500 text-xs mt-1">
                                       {errors[row.id].card_number}
@@ -344,6 +361,7 @@ const PurchaseModal: React.FC = () => {
                                       "transaction_date"
                                     )}
                                   />
+                                  {/* Display error message for transaction_date */}
                                   {errors[row.id]?.transaction_date && (
                                     <p className="text-red-500 text-xs mt-1">
                                       {errors[row.id].transaction_date}
@@ -351,6 +369,7 @@ const PurchaseModal: React.FC = () => {
                                   )}
                                 </div>
                               </td>
+                              {/* Delete Row Section */}
                               <td className="py-2 border-b text-center">
                                 <button
                                   onClick={() => deleteRow(row.id)}
@@ -376,6 +395,7 @@ const PurchaseModal: React.FC = () => {
                               </td>
                             </tr>
                           ))}
+                          {/* Add Row Section */}
                           <tr>
                             <td colSpan={5}></td>{" "}
                             <td className="py-1 px-3 flex justify-end shadow-md">

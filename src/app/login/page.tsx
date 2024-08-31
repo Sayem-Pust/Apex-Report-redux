@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { login } from "@/lib/store/API/UserApis";
 import { useRouter } from "next/navigation";
 
+// Importing Poppins font
 const PoppinsFont = Poppins({
   weight: "500",
   subsets: ["latin"],
@@ -23,6 +24,7 @@ export default function Login() {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
+  // Function to validate the form fields
   const validate = () => {
     const newErrors: { email?: string; password?: string } = {};
 
@@ -42,6 +44,7 @@ export default function Login() {
     return Object.keys(newErrors).length === 0;
   };
 
+  // Form submit handler
   const handleSubmit = (e: any) => {
     e.preventDefault();
     if (validate()) {
@@ -54,6 +57,7 @@ export default function Login() {
     }
   };
 
+  // Redirect to home if the user is logged in
   useEffect(() => {
     if (user?.id) {
       router.push("/");
@@ -81,6 +85,8 @@ export default function Login() {
                   </p>
                 </div>
               </div>
+
+              {/* Form Section */}
               <form className="space-y-4" onSubmit={handleSubmit}>
                 <div className={`${PoppinsFont.className}`}>
                   <label
@@ -109,6 +115,7 @@ export default function Login() {
                           : "border-[#CBD5E1]"
                       }`}
                     />
+                    {/* Display error message for email */}
                     {errors.email && (
                       <div className="flex items-center mt-2 gap-2 text-red-500 text-sm">
                         <svg
@@ -157,6 +164,7 @@ export default function Login() {
                       type="password"
                       aria-invalid={errors.password ? "true" : "false"}
                     />
+                    {/* Display error message for password */}
                     {errors.password && (
                       <div className="flex items-center mt-2 gap-2 text-red-500 text-sm">
                         <svg
@@ -184,6 +192,8 @@ export default function Login() {
                   Sign In
                 </button>
               </form>
+
+              {/* Display error message from API */}
               {error && (
                 <div className="mt-4 p-3 bg-red-100 text-red-700 rounded">
                   <p>{error}</p>
