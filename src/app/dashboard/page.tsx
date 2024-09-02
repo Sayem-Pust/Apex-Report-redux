@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import LoadingSpinner from "@/components/LoadingSpinner";
 import Pagination from "@/components/Pagination";
 import PurchaseModal from "@/components/PurchaseModal";
@@ -11,6 +11,7 @@ const Dashboard = () => {
   const { materialList, loading, error } = useAppSelector(
     (state) => state.material
   );
+  const [currentPage, setCurrentPage] = useState(0);
   const dispatch = useAppDispatch();
 
   // Fetch materials data on component mount
@@ -20,6 +21,7 @@ const Dashboard = () => {
 
   // Handle page click for pagination
   const handlePageClick = (data: any) => {
+    setCurrentPage(data.selected);
     dispatch(getPurchaseMaterials({ page: data.selected + 1 }));
     window.scrollTo({
       top: 180,
@@ -116,6 +118,7 @@ const Dashboard = () => {
               }
               handlePageClick={handlePageClick}
               pageRange={2}
+              currentPage={currentPage}
             />
           </div>
           {/* Display error message from API */}

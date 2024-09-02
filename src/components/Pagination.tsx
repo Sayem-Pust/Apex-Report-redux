@@ -2,15 +2,17 @@ import React from "react";
 import ReactPaginate from "react-paginate";
 
 type PropsType = {
-  pageCount?: number | null
-  handlePageClick(data: any): void
-  pageRange: number
-}
+  pageCount?: number | null;
+  handlePageClick(data: any): void;
+  pageRange: number;
+  currentPage: number;
+};
 
-const Pagination:React.FC<PropsType> = ({ pageCount, handlePageClick, pageRange }) => {
+const Pagination:React.FC<PropsType> = ({ pageCount, handlePageClick, pageRange, currentPage }) => {
   return (
     <div className="table-pagination">
       <ReactPaginate
+        forcePage={currentPage}
         nextLabel=">>"
         onPageChange={handlePageClick}
         marginPagesDisplayed={2}
