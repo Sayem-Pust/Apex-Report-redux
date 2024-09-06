@@ -5,6 +5,7 @@ import Pagination from "@/components/Pagination";
 import PurchaseModal from "@/components/PurchaseModal";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { getPurchaseMaterials } from "@/lib/store/API/meterialsApi";
+import DataTable from "@/components/TableComponent";
 
 const Dashboard = () => {
   // Extracting material data, loading state, and error state from the Redux store
@@ -29,6 +30,19 @@ const Dashboard = () => {
     });
   };
 
+  const columns = [
+    { header: "Items", accessor: "line_item_name" },
+    { header: "Store", accessor: "store" },
+    { header: "Runner's Name", accessor: "runners_name" },
+    { header: "Amount", accessor: "amount", isCurrency: true },
+    { header: "Card No.", accessor: "card_number" },
+    {
+      header: "Transaction Date",
+      accessor: "transaction_date",
+      dateFormat: true,
+    },
+  ];
+
   return (
     <aside className="">
       {loading ? (
@@ -38,77 +52,12 @@ const Dashboard = () => {
           <PurchaseModal />
 
           {/* Table Section */}
-          <div className="overflow-x-scroll">
-            <table className="table-auto  w-full border-separate border-spacing-1 border  custom-table-data my-2">
-              <thead className="text-center">
-                <tr className="bg-[#2563EB99] bg-opacity-[60%] text-white ">
-                  <th className="font-[600] text-[12px] px-2 py-3 uppercase">
-                    Items
-                  </th>
-                  <th className="font-[600] text-[12px] px-2 py-3 uppercase">
-                    Store
-                  </th>
-                  <th className="font-[600] text-[12px] px-2 py-3 ">
-                    Runner&apos;s Name
-                  </th>
-                  <th className="font-[600] text-[12px] px-2 py-3 uppercase">
-                    Amount
-                  </th>
-                  <th className="font-[600] text-[12px] px-2 py-3 uppercase">
-                    Card No.
-                  </th>
-                  <th className="font-[600] text-[12px] px-2 py-3 uppercase">
-                    {" "}
-                    Transaction Date
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="text-center">
-                {materialList?.material_purchase_list?.data?.map(
-                  (item, index) => (
-                    <tr
-                      key={item?.id}
-                      className={
-                        index % 2 === 0 ? "bg-white" : "bg-[#2563EB1A]"
-                      }
-                    >
-                      <td className="custom-table-data px-2 py-3">
-                        {item?.line_item_name}
-                      </td>
-                      <td className="custom-table-data px-2 py-3 ">
-                        {item?.store}
-                      </td>
-                      <td className="custom-table-data px-2 py-3">
-                        {item?.runners_name}
-                      </td>
-                      <td className="custom-table-data px-2 py-3">
-                        ${item?.amount}
-                      </td>
-                      <td className="custom-table-data px-2 py-3">
-                        {item?.card_number}
-                      </td>
-                      <td className="custom-table-data px-2 py-3">
-                        {item?.transaction_date &&
-                          (() => {
-                            const date = new Date(item?.transaction_date);
-                            const day = date
-                              .getDate()
-                              .toString()
-                              .padStart(2, "0");
-                            const month = date.toLocaleString("en-US", {
-                              month: "short",
-                            });
-                            const year = date.getFullYear();
-                            return `${day} ${month}, ${year}`;
-                          })()}
-                      </td>
-                      {/* <td className="custom-table-data px-2 py-3">01 Aug, 2024</td> */}
-                    </tr>
-                  )
-                )}
-              </tbody>
-            </table>
-          </div>
+          {materialList?.material_purchase_list?.data && (
+            <DataTable
+              columns={columns}
+              data={materialList?.material_purchase_list?.data}
+            />
+          )}
           {/* Pagination Section */}
           <div className="mt-8 flex justify-end">
             <Pagination

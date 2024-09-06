@@ -10,6 +10,7 @@ import { postPurchaseMaterials } from "@/lib/store/API/meterialsApi";
 // Import styles for date picker and toast notifications
 import "react-datepicker/dist/react-datepicker.css";
 import "react-toastify/dist/ReactToastify.css";
+import FormInput from "./FormFieldComponent";
 
 
 // Define the structure of each row in the form
@@ -247,107 +248,63 @@ const PurchaseModal: React.FC = () => {
                               }
                             >
                               <td className="py-2 px-4 border-b align-top">
-                                <div className="flex flex-col">
-                                  <input
-                                    type="text"
-                                    value={row.line_item_name}
-                                    onChange={handleChange(
-                                      row.id,
-                                      "line_item_name"
-                                    )}
-                                    className="w-full min-w-[80px] px-2 py-1 font-[600] text-[12px] text-[#545454] border border-gray-300 rounded"
-                                  />
-                                  {/* Display error message for Items */}
-                                  {errors[row.id]?.line_item_name && (
-                                    <p className="text-red-500 text-xs mt-1">
-                                      {errors[row.id].line_item_name}
-                                    </p>
+                                <FormInput
+                                  label="Items"
+                                  type="text"
+                                  value={row.line_item_name}
+                                  onChange={handleChange(
+                                    row.id,
+                                    "line_item_name"
                                   )}
-                                </div>
+                                  error={errors[row.id]?.line_item_name}
+                                />
                               </td>
                               <td className="py-2 px-4 border-b align-top">
-                                <div className="flex flex-col">
-                                  <input
-                                    type="text"
-                                    value={row.store}
-                                    onChange={handleChange(row.id, "store")}
-                                    className="w-full min-w-[80px] px-2 py-1 font-[600] text-[12px] text-[#545454] border border-gray-300 rounded"
-                                  />
-                                  {/* Display error message for store */}
-                                  {errors[row.id]?.store && (
-                                    <p className="text-red-500 text-xs mt-1">
-                                      {errors[row.id].store}
-                                    </p>
-                                  )}
-                                </div>
+                                <FormInput
+                                  label="Store"
+                                  type="text"
+                                  value={row.store}
+                                  onChange={handleChange(row.id, "store")}
+                                  error={errors[row.id]?.store}
+                                />
                               </td>
                               <td className="py-2 px-4 border-b align-top">
-                                <div className="flex flex-col">
-                                  <input
-                                    type="text"
-                                    value={row.runners_name}
-                                    onChange={handleChange(
-                                      row.id,
-                                      "runners_name"
-                                    )}
-                                    className="w-full min-w-[80px] px-2 py-1 font-[600] text-[12px] text-[#545454] border border-gray-300 rounded"
-                                  />
-                                  {/* Display error message for runners_name */}
-                                  {errors[row.id]?.runners_name && (
-                                    <p className="text-red-500 text-xs mt-1">
-                                      {errors[row.id].runners_name}
-                                    </p>
+                                <FormInput
+                                  label="Runner's Name"
+                                  type="text"
+                                  value={row.runners_name}
+                                  onChange={handleChange(
+                                    row.id,
+                                    "runners_name"
                                   )}
-                                </div>
+                                  error={errors[row.id]?.runners_name}
+                                />
                               </td>
                               <td className="py-2 px-4 border-b align-top">
-                                <div className="flex flex-col">
-                                  <div className="flex items-center">
-                                    <span className="text-[#545454] font-[600] text-[12px] mr-1">
-                                      $
-                                    </span>
-                                    <input
-                                      type="number"
-                                      min={0}
-                                      onKeyDown={(e) => {
-                                        if (e.key === "-" || e.key === "e") {
-                                          e.preventDefault();
-                                        }
-                                      }}
-                                      value={row.amount}
-                                      onChange={handleChange(row.id, "amount")}
-                                      className="w-full min-w-[80px] px-2 py-1 font-[600] text-[12px] text-[#545454] border border-gray-300 rounded"
-                                    />
-                                  </div>
-                                  {/* Display error message for amount */}
-                                  {errors[row.id]?.amount && (
-                                    <p className="text-red-500 text-xs mt-1">
-                                      {errors[row.id].amount}
-                                    </p>
-                                  )}
-                                </div>
+                                <FormInput
+                                  label="Amount"
+                                  type="number"
+                                  value={row.amount}
+                                  onChange={handleChange(row.id, "amount")}
+                                  error={errors[row.id]?.amount}
+                                  min={0}
+                                />
                               </td>
 
                               <td className="py-2 px-4 border-b align-top">
-                                <div className="flex flex-col">
-                                  <input
-                                    type="number"
-                                    value={row.card_number}
-                                    onChange={(e) => {
-                                      const value = e.target.value;
-                                      if (value.length <= 5) {
-                                        handleChange(row.id, "card_number")(e);
-                                      }
-                                    }}
-                                    className="w-full min-w-[80px] px-2 py-1 font-[600] text-[12px] text-[#545454] border border-gray-300 rounded"
-                                  />
-                                  {/* Display error message for card number */}
-                                  {errors[row.id]?.card_number && (
-                                    <p className="text-red-500 text-xs mt-1">
-                                      {errors[row.id].card_number}
-                                    </p>
-                                  )}
-                                </div>
+                                <FormInput
+                                  label="Card No."
+                                  type="number"
+                                  value={row.card_number}
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (value.length <= 5) {
+                                      handleChange(row.id, "card_number")(e);
+                                    }
+                                  }}
+                                  error={errors[row.id]?.card_number}
+                                  maxLength={5}
+                                />
                               </td>
                               <td className="py-2 px-4 border-b align-top">
                                 <div className="flex flex-col">

@@ -38,26 +38,7 @@ export const login = createAsyncThunk(
       thunkAPI.dispatch(getUser({}));
       return response.data;
     } catch (error: any) {
-      // Handle All types of error`
-      console.error("Login error:", error);
-      if (axios.isAxiosError(error)) {
-        const statusCode = error.response?.status;
-        const message =
-          error.response?.data?.message || "An error occurred during login.";
-
-        if (statusCode === 401) {
-          return thunkAPI.rejectWithValue("Invalid email or password.");
-        } else if (statusCode === 500) {
-          return thunkAPI.rejectWithValue(
-            "Internal server error. Please try again later."
-          );
-        }
-        return thunkAPI.rejectWithValue(message);
-      }
-
-      return thunkAPI.rejectWithValue(
-        "An unexpected error occurred. Please try again."
-      );
+      return thunkAPI.rejectWithValue(error.message || "An error occurred.");
     }
   }
 );
